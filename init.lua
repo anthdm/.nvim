@@ -18,25 +18,35 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Dark colorscheme variant
 vim.o.background = "dark"
 
 vim.opt.guicursor = "i:block"
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
+-- Disable Vim's mode indicator (i.e. -- INSERT --) so
+-- it doesn't visually conflict with `lualine.nvim`
+vim.opt.showmode = false
+-- Show current line number on cursorline
 vim.opt.number = true
+-- Relative line numbers
 vim.opt.relativenumber = true
 vim.opt.swapfile = false
-
+-- Highlight search results
 vim.o.hlsearch = true
+-- Enable mouse
 vim.o.mouse = "a"
 vim.o.breakindent = true
 vim.o.undofile = true
 vim.o.ignorecase = true
+-- Shorter update time ~ faster user experience
 vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 300
 --vim.o.completeopt = 'menuone,noselect'
-vim.o.termguicolors = true
+if vim.fn.has("termguicolors") == 1 then
+  vim.o.termguicolors = true
+end
 
 require("lazy").setup({
   {
@@ -48,7 +58,12 @@ require("lazy").setup({
       },
     },
   },
-  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = function()
+      pcall(require("nvim-treesitter.install").update({ with_sync = true }))
+    end,
+  },
   {
     "nvim-telescope/telescope.nvim",
     tag = "0.1.1",
@@ -148,21 +163,23 @@ vim.keymap.set("n", "<leader>h", ":wincmd h<CR>", { noremap = true })
 vim.keymap.set("n", "<leader>l", ":wincmd l<CR>", { noremap = true })
 
 -- See `:help telescope.builtin`
-vim.keymap.set("n", "<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
-vim.keymap.set("n", "<leader><space>", require("telescope.builtin").buffers, { desc = "[ ] Find existing buffers" })
+local builtin = require("telescope.builtin")
+
+vim.keymap.set("n", "<leader>?", builtin.oldfiles, { desc = "[?] Find recently opened files" })
+vim.keymap.set("n", "<leader><space>", builtin.buffers, { desc = "[ ] Find existing buffers" })
 vim.keymap.set("n", "<leader>f", function()
-  require("telescope.builtin").current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+  builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
     winblend = 10,
     previewer = false,
   }))
 end, { desc = "[/] Fuzzily search in current buffer" })
 
-vim.keymap.set("n", "<leader>p", require("telescope.builtin").find_files, { desc = "[S]earch [F]iles" })
-vim.keymap.set("n", "<M-p>", require("telescope.builtin").find_files, { desc = "[S]earch [F]iles" })
-vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
-vim.keymap.set("n", "<leader>sw", require("telescope.builtin").grep_string, { desc = "[S]earch current [W]ord" })
-vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
-vim.keymap.set("n", "<leader>sd", require("telescope.builtin").diagnostics, { desc = "[S]earch [D]iagnostics" })
+vim.keymap.set("n", "<leader>p", builtin.find_files, { desc = "[S]earch [F]iles" })
+vim.keymap.set("n", "<M-p>", builtin.find_files, { desc = "[S]earch [F]iles" })
+vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
+vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
+vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
+vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
 
 -- TREESITTER
 require("nvim-treesitter.configs").setup({
@@ -173,7 +190,14 @@ require("nvim-treesitter.configs").setup({
 })
 
 -- COLORSCHEME
-vim.cmd.colorscheme("gruvbox")
+vim.cmd.colorscheme("default")
+
+local colorscheme = "gruvbox"
+
+local colorscheme_ok, _ = pcall(vim.cmd.colorscheme, colorscheme)
+if not colorscheme_ok then
+  vim.notify(colorscheme .. " colorscheme not found!", vim.log.levels.ERROR)
+end
 
 -- Adding the same comment color in each theme
 local custom_comment_color_group = vim.api.nvim_create_augroup("CustomCommentCollor", { clear = true })
