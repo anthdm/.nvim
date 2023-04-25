@@ -10,6 +10,13 @@ require("packer").startup(function(use)
 		'nvim-telescope/telescope.nvim', tag = '0.1.1',
 		 requires = { {'nvim-lua/plenary.nvim'} }
 	}
+	use({
+	  "chama-chomo/grail",
+	  -- Optional; default configuration will be used if setup isn't called.
+	  config = function()
+		require("grail").setup()
+	  end,
+	})
 	use {
 	  'nvim-lualine/lualine.nvim',
 	   requires = { 'kyazdani42/nvim-web-devicons', opt = true }
@@ -67,7 +74,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 require'nvim-treesitter.configs'.setup {
 	ensure_installed = {"c", "lua", "vim", "go", "javascript", "typescript", "rust"},
 	highlight = {
-		enable = true,
+		enable = false,
 	}
 }
 
@@ -75,7 +82,7 @@ require'nvim-treesitter.configs'.setup {
 require("gruvbox").setup({
 	contrast = "hard",
 	palette_overrides = {
-		gray = "#2ea542",
+		gray = "#2ea542", -- comments are green and by that I mean GREEN
 	}
 })
 
@@ -128,7 +135,7 @@ require("nvim_comment").setup({
 -- TERMINAL SETUP
 require("toggleterm").setup{
 	direction = "horizontal",
-	size = 15,
+	size = 90,
 	open_mapping = [[<M-j>]]
 }
 

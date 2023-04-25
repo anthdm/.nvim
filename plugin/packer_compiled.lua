@@ -109,6 +109,11 @@ _G.packer_plugins = {
     path = "/home/anthdm/.local/share/nvim/site/pack/packer/start/friendly-snippets",
     url = "https://github.com/rafamadriz/friendly-snippets"
   },
+  grail = {
+    loaded = true,
+    path = "/home/anthdm/.local/share/nvim/site/pack/packer/start/grail",
+    url = "https://github.com/chama-chomo/grail"
+  },
   ["gruvbox.nvim"] = {
     loaded = true,
     path = "/home/anthdm/.local/share/nvim/site/pack/packer/start/gruvbox.nvim",
